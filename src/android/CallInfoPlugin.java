@@ -91,7 +91,13 @@ public class CallInfoPlugin extends CordovaPlugin {
     if(infos.size()>0){
       packagJSONData(infos);
     }else {
-      mCallbackContext.success("");
+      JSONObject jsonData = new JSONObject();
+      try {
+        jsonData.put("totalCount","0");
+      } catch (JSONException e) {
+        e.printStackTrace();
+      }
+      mCallbackContext.success(jsonData);
     }
   }
 
@@ -100,17 +106,24 @@ private void packagJSONData(List<CallInfo> infos ){
   for (CallInfo itemCall :infos){
     JSONObject jsonObject = new JSONObject();
     try {
-      jsonObject.put("number",itemCall.getNumber());
-      jsonObject.put("date",itemCall.getDate());
+      jsonObject.put("contactName",itemCall.getName());
+      jsonObject.put("phone",itemCall.getNumber());
       jsonObject.put("type",itemCall.getType());
-      jsonObject.put("name",itemCall.getName());
-      jsonObject.put("durtion",itemCall.getDurtion());
+      jsonObject.put("contactTime",itemCall.getDate());
+      jsonObject.put("times",itemCall.getDurtion());
       mJSonArray.put(jsonObject);
     } catch (JSONException e) {
       e.printStackTrace();
     }
   }
-  mCallbackContext.success(mJSonArray);
+  JSONObject jsonData = new JSONObject();
+  try {
+    jsonData.put("contacts",mJSonArray);
+    jsonData.put("totalCount",infos.size());
+  } catch (JSONException e) {
+    e.printStackTrace();
+  }
+  mCallbackContext.success(jsonData);
 }
 
   private static boolean isMarshmallow() {
